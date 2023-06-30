@@ -1,4 +1,7 @@
 gym==0.25.2
+matplotlib==3.7.1
 numpy==1.22.4
+pygame==2.4.0
 scipy==1.8.1
 shgo==1.0.0
+tgo==0.1

@@ -1,7 +1,10 @@
 import numpy as np
 from scipy.special import softmax
-from shgo import shgo
+from shgo import SHGO
 import timeit
+
+
+import dgraph
 
 
 def fun(theta):
@@ -29,14 +32,26 @@ if __name__ == "__main__":
     bounds = [(0.0, 1.0), ] * NDIM  # boundaries of theta
 
     start_time = timeit.default_timer()
-    res = shgo(
+    shc = SHGO(
         fun,
         bounds,
         n=int(1e3),
         workers=1,
         sampling_method='simplicial'
     )
+    shc.iterate_all()
+
     print(f'Took {timeit.default_timer()-start_time:.2f} seconds.')
 
-    for i, (value, solution) in enumerate(zip(res.funl, res.xl)):
+    for i, (value, solution) in enumerate(zip(shc.res.funl, shc.res.xl)):
         print(f'Result: {i}, \tReturn: {value:.2f}, \tSolution: {solution}')
+
+    # plot graph
+    HC = shc.HC
+    minima = [HC.V[v] for v in HC.V.cache if HC.V[v].minimiser()]
+    g = dgraph.construct_network_graph(minima, fun)
+    dtree = dgraph.make_disconnectivity_tree(g)
+    dtree.plot()
+
+
+

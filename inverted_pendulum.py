@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 import matplotlib.pyplot as plt
 import numpy as np
 from shgo import shgo
@@ -44,7 +44,7 @@ def fun(theta, gamma=1.0):
     actor.set_theta(theta)
     for _ in range(N_EPS):
         rewards = []
-        state = env.reset(seed=SEED)
+        state, _ = env.reset(seed=SEED)
         for _ in range(T_MAX):
             action = actor.act(state)
             state, reward, terminated, truncated, _ = env.step(action)
@@ -61,12 +61,11 @@ def fun(theta, gamma=1.0):
 def evaluate(theta):
     env = gym.make(
         'Pendulum-v1', g=G_FORCE,
-        render_mode='single_rgb_array',
-        new_step_api=True
+        render_mode='rgb_array'
     )
     actor.set_theta(theta)
 
-    state = env.reset(seed=SEED)
+    state, _ = env.reset(seed=SEED)
     img = plt.imshow(env.render())
     rewards = []
     for _ in range(T_MAX):
@@ -125,7 +124,7 @@ if __name__ == "__main__":
     G_FORCE = 4.81  # 1.81 will always work, default is 9.81
     WORKERS = 1
 
-    env = gym.make('Pendulum-v1', new_step_api=True, g=G_FORCE)
+    env = gym.make('Pendulum-v1', g=G_FORCE)
     actor = Actor(
         s_size=S_SIZE,
         a_size=A_SIZE,

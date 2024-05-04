@@ -6,6 +6,7 @@ class Actor(object):
     """
     Allowing to change the parameters of the actor's policy externally.
     """
+
     def __init__(self, s_size, a_size):
         self.ns = s_size
         self.na = a_size

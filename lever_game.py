@@ -26,17 +26,13 @@ if __name__ == "__main__":
     NDIM = 10
     TAU = 10
 
-    bounds = [(0.0, 1.0), ] * NDIM  # boundaries of theta
+    bounds = [
+        (0.0, 1.0),
+    ] * NDIM  # boundaries of theta
 
     start_time = timeit.default_timer()
-    res = shgo(
-        fun,
-        bounds,
-        n=int(1e3),
-        workers=1,
-        sampling_method='simplicial'
-    )
-    print(f'Took {timeit.default_timer()-start_time:.2f} seconds.')
+    res = shgo(fun, bounds, n=int(1e3), workers=1, sampling_method="simplicial")
+    print(f"Took {timeit.default_timer()-start_time:.2f} seconds.")
 
     for i, (value, solution) in enumerate(zip(res.funl, res.xl)):
-        print(f'Result: {i}, \tReturn: {value:.2f}, \tSolution: {solution}')
+        print(f"Result: {i}, \tReturn: {value:.2f}, \tSolution: {solution}")

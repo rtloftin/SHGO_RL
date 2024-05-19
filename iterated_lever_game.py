@@ -104,6 +104,9 @@ def fun(pi):
     assert state.shape == (NEP, NDIM * 2)
     state1 = state2 = state
 
+    if SELF_PLAY:
+        pi = pi.reshape(NDIM, NDIM)
+        pi = np.hstack([pi, pi])
     theta = np.repeat(pi.reshape(1, NDIM, NDIM * 2), NEP, 0)
 
     R = np.zeros(NEP)
@@ -123,17 +126,25 @@ def fun(pi):
         state1 = np.concatenate([a1hot, a2hot], -1)
         state2 = np.concatenate([a2hot, a1hot], -1)
 
-    return -R.sum() / NEP / TMAX
+    f = -R.sum() / NEP / TMAX
+    return f
 
 
 def example_solution():
-    pi = np.hstack([np.eye(NDIM), np.eye(NDIM)])
+    if SELF_PLAY:
+        pi = np.eye(NDIM).reshape(-1)
+    else:
+        pi = np.hstack([np.eye(NDIM), np.eye(NDIM)])
     value = fun(pi)
     print(f'Return: {value:.2f}, Solution: \n{pi}')
 
+
 def example_shgo():
     # TAU = 20.
-    bounds = [(0., 1.)] * NDIM * 2 * NDIM  # boundaries of theta
+    if SELF_PLAY:
+        bounds = [(0., 1.)] * NDIM * NDIM
+    else:
+        bounds = [(0., 1.)] * NDIM * 2 * NDIM  # boundaries of theta
 
     start_time = timeit.default_timer()
     res = shgo(
@@ -151,7 +162,10 @@ def example_shgo():
 
 def example_tgo():
     # TAU = 20.
-    bounds = [(0., 1.)] * NDIM * 2 * NDIM  # boundaries of theta
+    if SELF_PLAY:
+        bounds = [(0., 1.)] * NDIM * NDIM
+    else:
+        bounds = [(0., 1.)] * NDIM * 2 * NDIM  # boundaries of theta
 
     start_time = timeit.default_timer()
     res = tgo(
@@ -171,10 +185,11 @@ if __name__ == "__main__":
     NDIM = 3
     TAU = 5.
     OTHER_PLAY = True
+    SELF_PLAY = False    # policy acts same to actions of opponent as to its own actions
     NEP = int(1e3)
 
     # These can be adjusted
-    N = int(1e3)
+    N = int(2e3)
     WORKERS = 1
 
     example_solution()
